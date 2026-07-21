@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Guard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="brand"><span class="dot"></span> SOS GUARD</div>
+    <button id="demoBtn" class="topbtn">OPEN DEMO</button>
+</div>
+
+<div class="wrap">
+<div class="page">
+
+    <button id="howBtn" class="how-btn">SEE HOW IT WORKS</button>
+    <a href="/admin" class="admin-btn">VIEW ADMIN DASHBOARD</a>
+
+    <div id="howPanel" class="how-panel hidden">
+        <ol>
+            <li>Tap the SOS button.</li>
+            <li>+0-10s: grace period to cancel if it was a false alarm.</li>
+            <li>+5s: Call Ambulance button is emphasized.</li>
+            <li>+10s: live GPS location is captured automatically.</li>
+            <li>+20s: nearest hospital is identified (Haversine distance).</li>
+            <li>+25s: every saved emergency contact + the hospital are emailed
+                repeatedly (siren + voice message + exact-location map link)
+                until someone taps "Click Here", or up to 10 times.</li>
+            <li>+30s: alert fully sent — the whole process finishes inside
+                this {{ ESCALATION_WINDOW }}s escalation window.</li>
+        </ol>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat">
+            <div class="stat-num">{{ ESCALATION_WINDOW }}s</div>
+            <div class="stat-label">ESCALATION WINDOW</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">{{ CANCEL_WINDOW }}s</div>
+            <div class="stat-label">CANCEL GRACE PERIOD</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">0</div>
+            <div class="stat-label">HARDWARE REQUIRED</div>
+        </div>
+    </div>
+
+    <div class="card contacts-card">
+        <h3 class="contacts-title">EMERGENCY CONTACTS</h3>
+        <p class="contacts-sub">
+            Notified the moment an alert is confirmed — saved once here,
+            no typing needed from the patient during an emergency.
+        </p>
+        <div id="contactsList" class="contacts-list"></div>
+
+        <div class="add-contact-row">
+            <input type="text" id="newContactName" placeholder="Name">
+            <input type="text" id="newContactRelation" placeholder="Relation">
+            <input type="email" id="newContactEmail" placeholder="Email">
+            <button id="addContactBtn" class="add-contact-btn">+ Add Contact</button>
+        </div>
+        <div id="contactsError" class="error hidden"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-top">
+            <div class="unit-label">LIVE DEMO · UNIT #HW-114</div>
+            <div id="statusBadge" class="status-badge idle">Idle</div>
+        </div>
+
+        <div id="setupFields">
+            <label for="patientName">Patient Name</label>
+            <input type="text" id="patientName" placeholder="Enter patient name" value="Demo Driver">
+
+            <label class="checkbox-row">
+                <input type="checkbox" id="manualToggle">
+                No GPS on this device? Enter location manually
+            </label>
+
+            <div id="manualUpfrontBox" class="manual-location hidden">
+                <div class="manual-row">
+                    <div>
+                        <label for="manualLatUpfront">Latitude</label>
+                        <input type="text" id="manualLatUpfront" placeholder="12.212722">
+                    </div>
+                    <div>
+                        <label for="manualLonUpfront">Longitude</label>
+                        <input type="text" id="manualLonUpfront" placeholder="79.070480">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sos-circle-wrap">
+            <svg id="progressRing" class="progress-ring" viewBox="0 0 180 180">
+                <circle class="progress-ring-bg" cx="90" cy="90" r="82"></circle>
+                <circle id="progressRingFg" class="progress-ring-fg" cx="90" cy="90" r="82"></circle>
+            </svg>
+            <button id="sosBtn" class="sos-circle">
+                <span id="sosBtnText">SOS</span>
+                <span id="sosBtnSub">tap to trigger</span>
+            </button>
+        </div>
+
+        <button id="cancelBtn" class="cancel-btn hidden">Cancel alert — I'm okay</button>
+
+        <button id="callBtn" class="call-btn">📞 CALL AMBULANCE (108)</button>
+
+        <div id="manualLocationBox" class="manual-location hidden">
+            <p class="manual-hint">
+                ⚠️ Couldn't fetch device GPS (common on laptops/desktops without
+                a GPS chip). Enter coordinates manually to continue the demo:
+            </p>
+            <div class="manual-row">
+                <div>
+                    <label for="manualLat">Latitude</label>
+                    <input type="text" id="manualLat" placeholder="12.212722">
+                </div>
+                <div>
+                    <label for="manualLon">Longitude</label>
+                    <input type="text" id="manualLon" placeholder="79.070480">
+                </div>
+            </div>
+            <button id="useManualBtn" class="use-manual-btn">Use This Location</button>
+        </div>
+
+        <div class="log" id="log"></div>
+
+        <div id="errorBox" class="error hidden"></div>
+    </div>
+
+</div>
+</div>
+
+<script>
+  const ESCALATION_WINDOW_SECONDS = {{ ESCALATION_WINDOW }};
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

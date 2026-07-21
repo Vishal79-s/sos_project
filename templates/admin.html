@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Guard — Admin Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="brand"><span class="dot"></span> SOS GUARD — ADMIN</div>
+    <a href="/" class="topbtn">← Back to App</a>
+</div>
+
+<div class="wrap">
+    <div class="card wide">
+        <h2 style="margin-top:0;">SOS Event History</h2>
+
+        {% if events|length == 0 %}
+            <p style="color:#888;">No SOS events yet.</p>
+        {% else %}
+        <div class="table-scroll">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Contacts</th>
+                    <th>Nearest Hospital</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in events %}
+                <tr>
+                    <td>#{{ e.id }}</td>
+                    <td>{{ e.patient_name }}</td>
+                    <td>{{ e.contact_emails }}</td>
+                    <td>{{ e.hospital_name }}</td>
+                    <td>
+                        <a href="https://www.google.com/maps?q={{ e.patient_lat }},{{ e.patient_lon }}" target="_blank">
+                            {{ e.patient_lat }}, {{ e.patient_lon }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if e.acknowledged == 1 %}
+                            <span class="pill ack">Acknowledged</span>
+                        {% elif e.viewed == 1 %}
+                            <span class="pill pending">Viewed (not clicked)</span>
+                        {% else %}
+                            <span class="pill pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ e.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
